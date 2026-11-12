@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Crawl public engineering blogs and translate them into any language",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AIEngblogx/AIEngblogx.git"
+  },
+  "homepage": "https://github.com/AIEngblogx/AIEngblogx#readme",
+  "bugs": {
+    "url": "https://github.com/AIEngblogx/AIEngblogx/issues"
+  },
   "bin": {
     "blog-translate": "dist/main.js"
   },
@@ -12,7 +21,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node --test \"tests/*.test.ts\"",
-    "check": "tsc --noEmit && biome check src tests"
+    "check": "tsc --noEmit && biome check src tests",
+    "export:site": "node scripts/export-site.mjs"
   },
   "dependencies": {
     "cheerio": "^1.0.0",

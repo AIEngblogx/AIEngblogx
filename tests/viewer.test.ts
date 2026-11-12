@@ -52,7 +52,9 @@ test("viewer is a self-contained file with both panes and inline data", async ()
     assert.match(html, /prefers-reduced-motion/);
     assert.match(html, /class="sidebar"/);
     assert.match(html, /id="site-nav"/);
-    assert.match(html, /aria-label="Filter articles"/);
+    assert.match(html, /aria-label="Search articles"/);
+    assert.match(html, /id="theme-toggle"/);
+    assert.match(html, /id="search-panel"/);
     assert.ok(!html.includes("{{segments_json}}"));
   } finally {
     await rm(root, { recursive: true, force: true });

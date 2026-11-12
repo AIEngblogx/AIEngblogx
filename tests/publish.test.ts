@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { publishAll, removeArticle } from "../src/publishing/publish.ts";
+import { publishedPages } from "../src/publishing/site.ts";
 import {
   type ArticleIndex,
   loadIndex,
@@ -184,4 +185,37 @@ test("listForReview filters by status", async () => {
   } finally {
     await rm(root, { recursive: true, force: true });
   }
+});
+
+test("publishedPages keeps duplicate slugs distinct", () => {
+  const base = {
+    source: "openai-engineering",
+    tags: [],
+    status: "published" as const,
+    created_at: "2026-05-01T00:00:00Z",
+    published_at_local: null,
+  };
+  const index: ArticleIndex = {
+    schema_version: 2,
+    last_crawled_at: null,
+    articles: [
+      {
+        ...base,
+        id: "aaaaaaaaaaaaaaaa",
+        url: "https://example.test/part-two",
+        title: "Rapidly scaling online storage to serve over 1 billion ChatGPT users (Part II)",
+        published_at: "2026-05-02",
+      },
+      {
+        ...base,
+        id: "bbbbbbbbbbbbbbbb",
+        url: "https://example.test/part-one",
+        title: "Rapidly scaling online storage to serve over 1 billion ChatGPT users",
+        published_at: "2026-05-01",
+      },
+    ],
+  };
+  const pages = publishedPages(index);
+  assert.equal(new Set(pages.map((page) => page.href)).size, 2);
+  assert.match(pages[1]?.href ?? "", /-bbbbbbbbbbbbbbbb\.html$/);
 });
