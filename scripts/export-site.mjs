@@ -14,14 +14,22 @@ if (target === undefined) {
 const output = resolve(target);
 const SITE = "AIEngblogx";
 const SEARCH_INDEX = "search-index.json";
-const FOOTER =
-  "本站为公开 AI 工程博客的非官方中英对照归档。中文译文仅作辅助阅读，请以英文原文为准；文章内容版权归原作者所有。";
+const FOOTER = "文章版权归原作者所有，译文请以英文原文为准。";
+
+const SOURCE_NAMES = {
+  "anthropic-engineering": "Anthropic Engineering",
+  "openai-engineering": "OpenAI Engineering",
+  "google-deepmind": "Google DeepMind",
+};
 
 function sourceLabel(name) {
-  return name
-    .split(/[-_]/)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  return (
+    SOURCE_NAMES[name] ??
+    name
+      .split(/[-_]/)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ")
+  );
 }
 
 function xmlEscape(value) {
@@ -229,13 +237,13 @@ await writeFile(
   renderShell({
     title: "目录",
     heading: "AI 工程博客中英对照",
-    subline: `目前收录 ${pages.length} 篇公开工程文章的中英对照`,
+    subline: `共 ${pages.length} 篇 · ${sources.size} 个来源`,
     searchIndexHref: SEARCH_INDEX,
     prefix: "",
     activeHref: "index.html",
     index,
     content: [
-      `<p>本站收录 ${pages.length} 篇公开工程文章的中英对照阅读。每篇按段落给出中文译文与英文原文，正文与配图按原顺序保留，并可用页内按钮隐藏英文原文。顶部搜索框可全文检索中文译文与英文原文，右上角可切换深色 / 浅色主题。中文译文仅作辅助阅读，请以英文原文为准。</p>`,
+      `<p>${pages.length} 篇，按来源排在左边目录里。文章页中文在上、对应英文在下，点「隐藏英文原文」可以只留中文；顶部搜索中文英文都能搜，结果直接跳到命中的段落。译文拿不准时以英文原文为准。</p>`,
       `<ul class="post-list">${list}</ul>`,
       '<p><a href="about.html">关于</a> · <a href="rss.xml">RSS</a></p>',
     ].join("\n"),
@@ -256,17 +264,11 @@ await writeFile(
     activeHref: "about.html",
     index,
     content: [
-      "<p>本站是公开 AI 工程博客的非官方中英对照归档，按来源分组供阅读与检索使用。文章版权归原作者所有，每篇都保留原文链接与发布日期。</p>",
-      "<h2>内容</h2>",
-      `<p>目前收录 ${pages.length} 篇。每篇按段落给出中文译文与英文原文，可点击页内按钮隐藏英文原文；配图引用原文地址（不下载图片文件）。中文译文仅作辅助阅读，请以英文原文为准。</p>`,
-      "<h2>搜索</h2>",
-      "<p>顶部搜索框使用预生成的倒排索引，中文按二元切分、英文按单词切分，以词频与逆文档频率（TF-IDF）打分排序；结果直接跳到命中的段落。索引文件为 <code>search-index.json</code>，首次输入时按需加载，站点不依赖任何外部搜索服务。</p>",
-      "<h2>主题</h2>",
-      "<p>右上角按钮可在深色与浅色主题间切换，首次访问跟随系统偏好，选择会保存在本地浏览器中。</p>",
-      "<h2>生成</h2>",
-      '<p>页面由工具仓库 <a href="https://github.com/AIEngblogx/AIEngblogx">AIEngblogx/AIEngblogx</a> 的 <code>scripts/export-site.mjs</code> 从抓取数据生成，请勿手工编辑 HTML。</p>',
-      "<h2>版权与下架</h2>",
-      "<p>文章正文、译文与配图的权利归原作者所有，本仓库的 LICENSE 只覆盖页面模板、样式与脚本。如需下架某篇或修正译文，请在本仓库提交 Issue，注明文章链接与原因。</p>",
+      `<p>这里收的是 AI 实验室公开工程文章的中英对照，按段落对齐，现在有 ${pages.length} 篇，来自 ${sources.size} 个来源。每篇开头都留了原文链接和日期，配图直接引用原文地址。</p>`,
+      "<h2>读法</h2>",
+      "<p>中文在上、英文在下，点「隐藏英文原文」可以只留中文。顶部搜索用的是预先生成的索引，不依赖外部服务；右上角切深色，选择存在浏览器里。译文以英文原文为准，译错的地方开个 issue 说哪篇哪段就行。</p>",
+      "<h2>生成与版权</h2>",
+      '<p>页面由 <a href="https://github.com/AIEngblogx/AIEngblogx">AIEngblogx/AIEngblogx</a> 的 <code>scripts/export-site.mjs</code> 导出。文章、译文和配图的权利归原作者，仓库里的 LICENSE 只管模板和脚本；不希望被收录的文章，开 issue，我会撤掉。</p>',
     ].join("\n"),
     siteTitle: SITE,
     footer: FOOTER,
@@ -310,36 +312,29 @@ await writeFile(
   [
     `# ${SITE}`,
     "",
-    `公开 AI 工程博客的中英对照阅读站，目前收录 ${pages.length} 篇，持续补充。页面由工具仓库生成，可直接用 GitHub Pages 托管。`,
+    `把 ${[...sources].sort().map(sourceLabel).join("、")} 的公开工程文章按段落排成中英对照，方便对着原文读术语。现在收了 ${pages.length} 篇。`,
     "",
-    "## 部署",
+    "站点在 https://aiengblogx.github.io/ai-engineering-related-blogs/，Pages 从 `main` 根目录发布。左边按来源分目录，顶部搜索中文英文都能搜；文章页中文在上、对应英文在下，点「隐藏英文原文」可以只留中文。每篇开头都有原文链接和日期。",
     "",
-    "1. 仓库 Settings → Pages → Deploy from a branch → `main` / `(root)`。",
-    "2. 站点地址：`https://aiengblogx.github.io/ai-engineering-related-blogs/`。",
-    "3. 若实际地址不同，重新导出时把它作为第二个参数传入，以修正 RSS 链接。",
+    "译文只是帮着读，拿不准的地方以英文为准。译错了开个 issue，说哪篇哪段就行。",
     "",
-    "## 内容",
+    "## 怎么生成的",
     "",
-    "| 路径 | 内容 |",
-    "|---|---|",
-    "| `index.html` | 书目录（按来源分组的左侧目录、顶部全文搜索、篇末翻页） |",
-    "| `viewers/*.html` | 文章页，逐段中英对照（可切换隐藏英文原文）、原文配图、原文链接与日期 |",
-    "| `about.html` | 声明、搜索、主题与版权说明 |",
-    "| `search-index.json` | 全文搜索用的倒排索引，首次搜索时加载 |",
-    "| `rss.xml` | 订阅 |",
+    "这些 HTML 由 [AIEngblogx/AIEngblogx](https://github.com/AIEngblogx/AIEngblogx) 导出，别直接改生成物。抓取和翻译都在本机跑，文章数据不入库，换台机器得自己抓一遍：",
     "",
-    "## 站点生成",
+    "```bash",
+    "npm ci",
+    "npm run build",
+    "node dist/main.js crawl --json",
+    "node dist/main.js translate --model <model> --lang zh-CN --json",
+    "node scripts/export-site.mjs ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs",
+    "```",
     "",
-    "页面由 [AIEngblogx/AIEngblogx](https://github.com/AIEngblogx/AIEngblogx) 的",
-    "`scripts/export-site.mjs` 从抓取数据生成，请勿手工编辑 HTML。工具仓库只包含代码；",
-    "文章数据留在本机，不入库。复现步骤见工具仓库 README 与 CONTRIBUTING。",
-    "只有已完成译文的文章会被导出。",
+    "第二个参数写进 RSS 链接，换域名时改这里重跑一次。只有有译文的文章会被导出。",
     "",
-    "## 版权与内容",
+    "## 版权",
     "",
-    "文章正文、译文与配图的权利归原作者所有，本仓库 `LICENSE` 只覆盖页面模板、样式与脚本。",
-    "本站为非官方归档，每篇保留原文链接与发布日期；中文译文仅作辅助阅读，请以英文原文为准。",
-    "如需下架某篇或修正译文，请在本仓库提交 Issue，注明文章链接与原因。",
+    "文章、译文和配图的权利归原作者，仓库里的 `LICENSE` 只管模板和脚本。哪家不希望自己的文章被收，开 issue，我会撤掉。",
     "",
   ].join("\n"),
   "utf8",
