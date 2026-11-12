@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSearchIndex } from "../dist/publishing/search.js";
@@ -118,8 +118,9 @@ for (const article of sourceIndex.articles) {
   }
   const raw = pending.source_paragraphs ?? [];
   const translated = pending.target_paragraphs ?? [];
+  // 少于 3 段说明只抓到了标题或页眉，没有正文，先不上站。
+  if (raw.length < 3) continue;
   const hasTranslation =
-    raw.length > 0 &&
     Array.isArray(pending.target_paragraphs) &&
     translated.length === raw.length &&
     typeof pending.target_language === "string" &&
@@ -129,13 +130,17 @@ for (const article of sourceIndex.articles) {
   pendingById.set(article.id, pending);
 }
 if (articles.length === 0) {
-  throw new Error("no translated articles in inbox/pending");
+  throw new Error("no translated articles with full text in inbox/pending");
 }
 const index = { schema_version: 2, last_crawled_at: null, articles };
 const pages = publishedPages(index);
 const sources = new Set(pages.map((page) => page.source));
 
 await mkdir(join(output, "viewers"), { recursive: true });
+const keep = new Set(pages.map((page) => page.href.slice("viewers/".length)));
+for (const name of await readdir(join(output, "viewers"))) {
+  if (name.endsWith(".html") && !keep.has(name)) await rm(join(output, "viewers", name));
+}
 const searchDocuments = [];
 
 for (let i = 0; i < pages.length; i++) {
@@ -330,7 +335,7 @@ await writeFile(
     "node scripts/export-site.mjs ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs",
     "```",
     "",
-    "第二个参数写进 RSS 链接，换域名时改这里重跑一次。只有有译文的文章会被导出。",
+    "第二个参数写进 RSS 链接，换域名时改这里重跑一次。只有有译文、且抓到正文的文章会被导出。",
     "",
     "## 版权",
     "",
