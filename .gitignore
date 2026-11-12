@@ -1,0 +1,9 @@
+node_modules/
+dist/
+logs/
+data/
+inbox/
+site/
+docs/
+.env
+*.tsbuildinfo

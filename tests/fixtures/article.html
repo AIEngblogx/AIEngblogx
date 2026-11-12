@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- Synthetic fixture: an article page with figures, code, and unsafe image URLs. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta property="article:published_time" content="2024-05-14">
+  <title>TEST_ARTICLE_TITLE</title>
+</head>
+<body>
+  <nav><a href="/">Home</a></nav>
+  <article>
+    <h1>TEST_ARTICLE_TITLE</h1>
+    <p>Connection pooling keeps the number of open database sessions bounded, but it also moves retries and timeouts out of the application.</p>
+    <figure>
+      <img src="/images/figure.png" alt="Connection pool diagram">
+      <figcaption>Connection pool sizing.</figcaption>
+    </figure>
+    <p>The second paragraph includes numbers like 42 and inline code such as pool_size = 20.</p>
+    <figure>
+      <img data-src="/images/lazy.png" alt="">
+      <figcaption>Latency percentiles</figcaption>
+    </figure>
+    <h2>Details</h2>
+    <p>A short rollout window made the regression easy to spot.</p>
+    <pre>const poolSize = 20;</pre>
+    <img src="data:image/png;base64,AAAA" alt="inline">
+    <img src="javascript:alert(1)" alt="unsafe">
+  </article>
+</body>
+</html>

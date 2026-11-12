@@ -1,0 +1,30 @@
+[[sources]]
+name = "anthropic-engineering"
+list_url = "https://www.anthropic.com/engineering"
+extra_urls = [
+  "https://www.anthropic.com/research/claude-think-tool",
+  "https://www.anthropic.com/research/swe-bench-sonnet",
+  "https://www.anthropic.com/research/building-effective-agents",
+  "https://www.anthropic.com/research/contextual-retrieval",
+]
+
+[[sources]]
+name = "google-deepmind"
+list_url = "https://deepmind.google/blog/feed/basic"
+
+[[sources]]
+name = "openai-engineering"
+list_url = "https://openai.com/news/engineering/rss.xml"
+
+[crawl]
+respect_robots = true
+fetch_full_text = true
+request_delay_ms = 1000
+max_articles_per_source = 20
+
+[translate]
+target_languages = ["zh-CN"]
+temperature = 0.2
+
+[align]
+threshold = 0.6

@@ -1,0 +1,6 @@
+{
+  "agent": { "keep_original": true },
+  "context engineering": { "keep_original": true, "note": "Keep the term in English on first use." },
+  "evals": { "keep_original": true, "note": "Short for evaluations." },
+  "harness": { "keep_original": true }
+}

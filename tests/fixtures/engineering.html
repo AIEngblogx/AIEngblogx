@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- Synthetic fixture: a listing page that exposes articles through JSON-LD. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Engineering</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "headline": "Postgres connection pooling at scale",
+        "url": "/engineering/postgres-connection-pooling",
+        "datePublished": "2024-05-14",
+        "description": "What changed when connection management moved out of the application."
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "A year of HTTP caching mistakes",
+        "url": "/engineering/http-caching-mistakes",
+        "datePublished": "2024-04-02",
+        "description": "Cache keys, revalidation, and the incidents they caused."
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Engineering</h1>
+    <p>Notes from the infrastructure team on databases, caching, and build systems.</p>
+    <section aria-label="Recent posts">
+      <h2>Recent posts</h2>
+      <p>Postgres connection pooling at scale — May 14, 2024</p>
+      <p>A year of HTTP caching mistakes — Apr 2, 2024</p>
+    </section>
+  </main>
+</body>
+</html>
