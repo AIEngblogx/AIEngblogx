@@ -3,11 +3,20 @@ import { rankRecords, tokenize } from "./search.ts";
 
 export const SITE_TITLE = "Blog Translations";
 
+const SOURCE_NAMES: Record<string, string> = {
+  "anthropic-engineering": "Anthropic Engineering",
+  "openai-engineering": "OpenAI Engineering",
+  "google-deepmind": "Google DeepMind",
+};
+
 function sourceLabel(name: string): string {
-  return name
-    .split(/[-_]/)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  return (
+    SOURCE_NAMES[name] ??
+    name
+      .split(/[-_]/)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ")
+  );
 }
 
 export function escapeHtml(text: string): string {
@@ -21,6 +30,7 @@ export function escapeHtml(text: string): string {
 
 export interface PublishedPage {
   label: string;
+  title: string;
   href: string;
   source: string;
   date: string;
@@ -37,7 +47,8 @@ export function publishedPages(index: ArticleIndex): PublishedPage[] {
     .filter((article) => article.status === "published")
     .sort((left, right) => right.published_at.localeCompare(left.published_at))
     .map((article) => ({
-      label: article.title,
+      label: article.target_title ? `${article.target_title}（${article.title}）` : article.title,
+      title: article.title,
       href: `viewers/${slugify(article.title)}.html`,
       source: article.source,
       date: article.published_at,
@@ -77,9 +88,13 @@ export function renderNav(index: ArticleIndex, prefix: string, activeHref: strin
     bucket.push(page);
     groups.set(page.source, bucket);
   }
-  let number = 0;
-  for (const [source, items] of groups) {
-    lines.push(`<div class="group">${escapeHtml(sourceLabel(source))}</div>`);
+  const ordered = [...groups].sort((left, right) => right[1].length - left[1].length);
+  for (const [source, items] of ordered) {
+    lines.push(
+      `<details class="nav-group" open>`,
+      `<summary class="group">${escapeHtml(sourceLabel(source))}</summary>`,
+    );
+    let number = 0;
     for (const item of items) {
       number += 1;
       const current = item.href === activeHref;
@@ -89,6 +104,7 @@ export function renderNav(index: ArticleIndex, prefix: string, activeHref: strin
           `<span class="num">${String(number).padStart(2, "0")}</span>${escapeHtml(item.label)}</a>`,
       );
     }
+    lines.push("</details>");
   }
   if (pages.length === 0) lines.push('<p class="empty">No published articles yet.</p>');
   return lines.join("\n");
@@ -187,6 +203,14 @@ mark { background: var(--mark-bg); color: var(--mark-ink); border-radius: 2px; p
 .sidebar nav a:hover, .mobile-nav nav a:hover { background: var(--wash); text-decoration: none; }
 .sidebar nav a.current, .mobile-nav nav a.current { background: var(--wash); font-weight: 600; }
 .group { padding: 20px 20px 6px; font-size: 0.8rem; color: var(--muted); }
+.nav-group > summary.group { cursor: pointer; list-style: none; }
+.nav-group > summary.group::-webkit-details-marker { display: none; }
+.nav-group > summary.group::before {
+  content: ""; display: inline-block; width: 5px; height: 5px; margin-right: 8px;
+  border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted);
+  transform: rotate(-45deg); vertical-align: 2px;
+}
+.nav-group[open] > summary.group::before { transform: rotate(45deg); vertical-align: 1px; }
 .num { display: inline-block; min-width: 26px; font-size: 0.8rem; color: var(--muted); }
 .empty { padding: 12px 20px; font-size: 0.875rem; color: var(--muted); }
 .post-list { list-style: none; padding: 0; margin: 0 0 24px; }
@@ -293,20 +317,18 @@ export const SITE_JS = `
   function filterNav(query) {
     var navs = document.querySelectorAll("#site-nav, .mobile-nav nav");
     for (var n = 0; n < navs.length; n++) {
-      var nav = navs[n];
-      var items = nav.querySelectorAll(".nav-item");
-      for (var i = 0; i < items.length; i++) {
-        items[i].hidden = query !== "" && items[i].textContent.toLowerCase().indexOf(query) === -1;
-      }
-      var groups = nav.querySelectorAll(".group");
+      var groups = navs[n].querySelectorAll(".nav-group");
       for (var g = 0; g < groups.length; g++) {
-        var sibling = groups[g].nextElementSibling;
+        var group = groups[g];
+        var items = group.querySelectorAll(".nav-item");
         var visible = false;
-        while (sibling !== null && sibling.classList.contains("nav-item")) {
-          if (!sibling.hidden) visible = true;
-          sibling = sibling.nextElementSibling;
+        for (var i = 0; i < items.length; i++) {
+          var match = query === "" || items[i].textContent.toLowerCase().indexOf(query) !== -1;
+          items[i].hidden = !match;
+          if (match) visible = true;
         }
-        groups[g].hidden = query !== "" && !visible;
+        group.hidden = query !== "" && !visible;
+        if (query !== "" && visible) group.open = true;
       }
     }
   }

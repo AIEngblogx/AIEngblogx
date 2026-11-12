@@ -79,6 +79,9 @@ human-edited, reviewed article.
 
 ```bash
 npm run build
+node dist/main.js crawl --json
+node dist/main.js translate --model <model> --lang zh-CN --json
+node scripts/translate-titles.mjs <model>
 npm run export:site -- ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs
 ```
 
@@ -150,6 +153,9 @@ node dist/main.js serve --port 8080
 
 ```bash
 npm run build
+node dist/main.js crawl --json
+node dist/main.js translate --model <model> --lang zh-CN --json
+node scripts/translate-titles.mjs <model>
 npm run export:site -- ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs
 ```
 

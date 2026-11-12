@@ -28,6 +28,7 @@ npm run build
 npm run build
 node dist/main.js crawl --json
 node dist/main.js translate --lang zh-CN --json
+node scripts/translate-titles.mjs <model>
 npm run export:site -- <站点目录> <站点 URL>
 ```
 

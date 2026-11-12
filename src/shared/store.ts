@@ -15,6 +15,7 @@ export interface ArticleRecord {
   source: string;
   url: string;
   title: string;
+  target_title?: string;
   published_at: string;
   tags: string[];
   status: ArticleStatus;

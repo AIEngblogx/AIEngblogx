@@ -219,3 +219,38 @@ test("publishedPages keeps duplicate slugs distinct", () => {
   assert.equal(new Set(pages.map((page) => page.href)).size, 2);
   assert.match(pages[1]?.href ?? "", /-bbbbbbbbbbbbbbbb\.html$/);
 });
+
+test("publishedPages keeps the original title alongside the translation", () => {
+  const base = {
+    source: "anthropic-engineering",
+    tags: [],
+    status: "published" as const,
+    created_at: "2026-05-01T00:00:00Z",
+    published_at_local: null,
+  };
+  const index: ArticleIndex = {
+    schema_version: 2,
+    last_crawled_at: null,
+    articles: [
+      {
+        ...base,
+        id: "cccccccccccccccc",
+        url: "https://example.test/a",
+        title: "Scaling online storage",
+        target_title: "扩展在线存储",
+        published_at: "2026-05-01",
+      },
+      {
+        ...base,
+        id: "dddddddddddddddd",
+        url: "https://example.test/b",
+        title: "Untitled experiment",
+        published_at: "2026-04-01",
+      },
+    ],
+  };
+  const pages = publishedPages(index);
+  assert.equal(pages[0]?.title, "Scaling online storage");
+  assert.equal(pages[0]?.label, "扩展在线存储（Scaling online storage）");
+  assert.equal(pages[1]?.label, "Untitled experiment");
+});
