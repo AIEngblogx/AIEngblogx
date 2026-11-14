@@ -479,6 +479,7 @@ export interface ShellOptions {
   siteTitle?: string;
   footer?: string;
   searchIndexHref?: string;
+  repoUrl?: string;
 }
 
 export function renderShell(options: ShellOptions): string {
@@ -490,6 +491,8 @@ export function renderShell(options: ShellOptions): string {
     options.footer ??
     "Translations are provided as-is. See the original article for authoritative wording.";
   const searchIndexHref = escapeHtml(options.searchIndexHref ?? "");
+  const repoLink =
+    options.repoUrl === undefined ? "" : `<a href="${escapeHtml(options.repoUrl)}">GitHub</a>`;
   return `<!doctype html>
 <html lang="${escapeHtml(options.language ?? "en")}">
 <head>
@@ -509,6 +512,7 @@ export function renderShell(options: ShellOptions): string {
     <label class="search"><input id="nav-filter" type="search" placeholder="Search articles" aria-label="Search articles" autocomplete="off"></label>
     <button id="theme-toggle" type="button" aria-pressed="false">Dark</button>
     <a href="${options.prefix}rss.xml">RSS</a>
+    ${repoLink}
   </div>
 </header>
 <div class="search-panel" id="search-panel" hidden>

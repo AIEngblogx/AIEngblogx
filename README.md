@@ -1,6 +1,23 @@
-# Blog Translate
+<div align="center">
 
-[中文](#中文)
+<h1 id="aiengblogx">AIEngblogx</h1>
+
+<p>AI engineering blog articles, side by side with Chinese translations.</p>
+
+<p>
+  <a href="https://aiengblogx.github.io/ai-engineering-related-blogs/">Site</a> ·
+  <a href="https://github.com/AIEngblogx/ai-engineering-related-blogs">Site repository</a> ·
+  <a href="https://github.com/AIEngblogx/AIEngblogx">Tool repository</a> ·
+  <a href="#中文">中文</a>
+</p>
+
+<p>
+  <a href="https://github.com/AIEngblogx/AIEngblogx/actions/workflows/ci.yml"><img src="https://github.com/AIEngblogx/AIEngblogx/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/node-24%2B-339933.svg" alt="Node 24+"></a>
+</p>
+
+</div>
 
 Crawl public engineering blogs, translate articles into any target language with
 a local OpenAI-compatible model, align sentences, review by hand, and publish a
@@ -119,9 +136,9 @@ MIT, see [LICENSE](LICENSE).
 
 ## 中文
 
-[English](#blog-translate)
+[English](#aiengblogx)
 
-Blog Translate 抓取公开工程博客，用本地 OpenAI 兼容模型把文章翻译成任意目标语言，
+本仓库抓取公开工程博客，用本地 OpenAI 兼容模型把文章翻译成任意目标语言，
 做句子对齐、人工校对，最后生成对照阅读的静态站点。来源、目标语言和模型端点都可配置，
 仓库里不包含任何特定机器的设置或抓取到的文章数据。
 

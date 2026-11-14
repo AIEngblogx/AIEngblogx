@@ -72,6 +72,23 @@ test("browser bundle uses the exact same tokenizer and ranker as the builder", (
   assert.ok(SITE_JS.includes(rankRecords.toString()));
 });
 
+test("shell links to the source repository only when configured", () => {
+  const base = {
+    title: "Contents",
+    heading: "Contents",
+    subline: "",
+    prefix: "",
+    activeHref: "index.html",
+    index: EMPTY_INDEX,
+    content: "<p>body</p>",
+  };
+  assert.doesNotMatch(renderShell(base), /GitHub<\/a>/);
+  assert.match(
+    renderShell({ ...base, repoUrl: "https://github.com/example/repo" }),
+    /href="https:\/\/github\.com\/example\/repo">GitHub<\/a>/,
+  );
+});
+
 test("shell exposes theme controls, full-text search panel and the index path", () => {
   const html = renderShell({
     title: "Contents",

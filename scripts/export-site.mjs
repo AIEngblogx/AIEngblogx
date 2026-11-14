@@ -14,7 +14,10 @@ if (target === undefined) {
 const output = resolve(target);
 const SITE = "AIEngblogx";
 const SEARCH_INDEX = "search-index.json";
-const FOOTER = "文章版权归原作者所有，译文请以英文原文为准。";
+const SITE_REPO = "https://github.com/AIEngblogx/ai-engineering-related-blogs";
+const TOOL_REPO = "https://github.com/AIEngblogx/AIEngblogx";
+const FOOTER =
+  `文章版权归原作者所有，译文请以英文原文为准。 · <a href="${TOOL_REPO}">工具仓库</a>`;
 
 const SOURCE_NAMES = {
   "anthropic-engineering": "Anthropic Engineering",
@@ -224,6 +227,7 @@ for (let i = 0; i < pages.length; i++) {
       next: following === undefined ? null : { label: following.title, href: following.href },
       siteTitle: SITE,
       footer: FOOTER,
+      repoUrl: SITE_REPO,
     }),
     "utf8",
   );
@@ -255,6 +259,7 @@ await writeFile(
     ].join("\n"),
     siteTitle: SITE,
     footer: FOOTER,
+    repoUrl: SITE_REPO,
   }),
   "utf8",
 );
@@ -274,10 +279,11 @@ await writeFile(
       "<h2>读法</h2>",
       "<p>中文在上、英文在下，点「隐藏英文原文」可以只留中文。顶部搜索用的是预先生成的索引，不依赖外部服务；右上角切深色，选择存在浏览器里。译文以英文原文为准，译错的地方开个 issue 说哪篇哪段就行。</p>",
       "<h2>生成与版权</h2>",
-      '<p>页面由 <a href="https://github.com/AIEngblogx/AIEngblogx">AIEngblogx/AIEngblogx</a> 的 <code>scripts/export-site.mjs</code> 导出。文章、译文和配图的权利归原作者，仓库里的 LICENSE 只管模板和脚本。</p>',
+      `<p>页面由 <a href="${TOOL_REPO}">AIEngblogx/AIEngblogx</a> 的 <code>scripts/export-site.mjs</code> 导出。文章、译文和配图的权利归原作者，仓库里的 LICENSE 只管模板和脚本。</p>`,
     ].join("\n"),
     siteTitle: SITE,
     footer: FOOTER,
+    repoUrl: SITE_REPO,
   }),
   "utf8",
 );
@@ -320,7 +326,9 @@ await writeFile(
     "",
     `AI 工程博客的中英对照阅读站，按段落对齐原文与译文。收录 ${[...sources].sort().map(sourceLabel).join("、")} 的公开文章，目前 ${pages.length} 篇。`,
     "",
-    "站点：https://aiengblogx.github.io/ai-engineering-related-blogs/（GitHub Pages，从 `main` 根目录发布）。侧边栏按来源分组、可折叠；文章页支持全文检索与隐藏英文原文。译文以英文原文为准。",
+    `站点：${siteUrl === "" ? "https://aiengblogx.github.io/ai-engineering-related-blogs/" : siteUrl}（GitHub Pages，从 \`main\` 根目录发布）。侧边栏按来源分组、可折叠；文章页支持全文检索与隐藏英文原文。译文以英文原文为准。`,
+    "",
+    "仓库：" + `[${SITE_REPO}](${SITE_REPO})` + " · " + `[${TOOL_REPO}](${TOOL_REPO})`,
     "",
     "## 生成",
     "",
