@@ -1,7 +1,7 @@
 import { type ArticleIndex, slugify } from "../shared/store.ts";
 import { rankRecords, tokenize } from "./search.ts";
 
-export const SITE_TITLE = "Blog Translations";
+export const SITE_TITLE = "AIEngblogx";
 
 const SOURCE_NAMES: Record<string, string> = {
   "anthropic-engineering": "Anthropic Engineering",
@@ -71,8 +71,8 @@ export function renderNav(index: ArticleIndex, prefix: string, activeHref: strin
   const pages = publishedPages(index);
   const lines: string[] = [];
   const topLinks: [string, string][] = [
-    ["Contents", "index.html"],
-    ["About", "about.html"],
+    ["目录", "index.html"],
+    ["关于", "about.html"],
   ];
   for (const [label, href] of topLinks) {
     const current = href === activeHref;
@@ -501,7 +501,7 @@ export function renderShell(options: ShellOptions): string {
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:,">
 <title>${escapeHtml(options.title)} · ${siteTitle}</title>
-<meta name="description" content="Side-by-side translations of public engineering articles">
+<meta name="description" content="AI 使用与原理相关工程文章的中英对照归档">
 <style>${SITE_CSS}</style>
 <script>${THEME_BOOT_JS}</script>
 </head>
@@ -519,8 +519,8 @@ export function renderShell(options: ShellOptions): string {
   <div class="search-status" id="search-status" role="status" aria-live="polite"></div>
   <div id="search-results"></div>
 </div>
-<aside class="sidebar"><nav id="site-nav" aria-label="Contents">${nav}</nav></aside>
-<details class="mobile-nav"><summary>Contents</summary><nav aria-label="Contents">${nav}</nav></details>
+<aside class="sidebar"><nav id="site-nav" aria-label="目录">${nav}</nav></aside>
+<details class="mobile-nav"><summary>目录</summary><nav aria-label="目录">${nav}</nav></details>
 <main class="main"><article class="page">
   <h1>${escapeHtml(options.heading)}</h1>
   <p class="subline">${options.subline}</p>

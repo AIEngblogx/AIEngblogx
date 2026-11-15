@@ -22,18 +22,18 @@ npm run build
 
 ## 生成站点
 
-站点页面由 `scripts/export-site.mjs` 生成，产物推送到 [AIEngblogx/ai-engineering-related-blogs](https://github.com/AIEngblogx/ai-engineering-related-blogs)。文章数据（`data/`、`inbox/`）不入库，复现需要自己抓取并翻译：
+站点页面由 `scripts/export-site.mjs` 生成，产物推送到 [ai-engineering-related-blogs](https://github.com/AIEngblogx/ai-engineering-related-blogs)。这条路径与 CLI 的 `publish`（写入本机 `site/`）相互独立。文章数据（`data/`、`inbox/`）不入库，复现需要自己抓取并翻译：
 
 ```bash
 npm run build
 node dist/main.js crawl --json
 node dist/main.js translate --lang zh-CN --json
 node scripts/translate-titles.mjs <model>
-npm run export:site -- <站点目录> <站点 URL>
+npm run export:site -- <站点目录> https://aiengblogx.github.io/ai-engineering-related-blogs/
 ```
 
-第二个参数用于生成 RSS 的绝对链接，省略时 RSS 指向文章原文。只有已完成译文的文章会被导出，其余来源翻译完成后重跑即可加入。
+第二个参数用于生成 RSS 的绝对链接，省略时 RSS 指向文章原文。导出只收录译文完整且正文不少于 3 段的文章，并清理上一版不再收录的页面。
 
 ## 译文勘误
 
-译文问题请到站点仓库提交 Issue，注明文章与段落；下架请求同样走 Issue。
+译文勘误与下架请求请到[站点仓库 Issue](https://github.com/AIEngblogx/ai-engineering-related-blogs/issues)提交，注明文章与段落。

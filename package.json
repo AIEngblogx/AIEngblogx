@@ -1,19 +1,19 @@
 {
-  "name": "blog-translate",
+  "name": "aiengblogx",
   "version": "0.1.0",
   "type": "module",
-  "description": "Crawl public engineering blogs and translate them into any language",
+  "description": "Tooling for a bilingual archive of AI engineering articles",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/AIEngblogx/AIEngblogx.git"
   },
-  "homepage": "https://github.com/AIEngblogx/AIEngblogx#readme",
+  "homepage": "https://aiengblogx.github.io/ai-engineering-related-blogs/",
   "bugs": {
     "url": "https://github.com/AIEngblogx/AIEngblogx/issues"
   },
   "bin": {
-    "blog-translate": "dist/main.js"
+    "aiengblogx": "dist/main.js"
   },
   "engines": {
     "node": ">=24"

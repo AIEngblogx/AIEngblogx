@@ -13,11 +13,14 @@ if (target === undefined) {
 }
 const output = resolve(target);
 const SITE = "AIEngblogx";
-const SEARCH_INDEX = "search-index.json";
+const SITE_URL = "https://aiengblogx.github.io/ai-engineering-related-blogs/";
 const SITE_REPO = "https://github.com/AIEngblogx/ai-engineering-related-blogs";
 const TOOL_REPO = "https://github.com/AIEngblogx/AIEngblogx";
+const SEARCH_INDEX = "search-index.json";
+const PUBLIC_SITE_URL = siteUrl === "" ? SITE_URL : `${siteUrl}/`;
 const FOOTER =
-  `文章版权归原作者所有，译文请以英文原文为准。 · <a href="${TOOL_REPO}">工具仓库</a>`;
+  `文章版权归原作者所有，译文以英文原文为准。 · ` +
+  `<a href="${SITE_REPO}">站点仓库</a> · <a href="${TOOL_REPO}">工具仓库</a>`;
 
 const SOURCE_NAMES = {
   "anthropic-engineering": "Anthropic Engineering",
@@ -198,12 +201,12 @@ for (let i = 0; i < pages.length; i++) {
     }
   }
   const translationNote = hasTranslation
-    ? "中文译文仅作辅助阅读，请以英文原文为准；发现错译欢迎提交 Issue 勘误。"
+    ? "译文仅作辅助阅读，以英文原文为准。"
     : "本篇暂无中文译文，仅保留英文原文。";
   parts.push(
     "<h2>声明</h2>",
-    `<p>本文为公开 AI 工程博客文章的非官方中英对照归档，${translationNote}` +
-      `文章版权归原作者所有。原文链接：<a href="${escapeHtml(pending.url)}" target="_blank" rel="noopener noreferrer">` +
+    `<p>公开 AI 工程文章的非官方中英对照归档，${translationNote}` +
+      `文章版权归原作者所有。原文：<a href="${escapeHtml(pending.url)}" target="_blank" rel="noopener noreferrer">` +
       `${escapeHtml(pending.url)}</a>。</p>`,
   );
   const previous = pages[i - 1];
@@ -247,8 +250,8 @@ await writeFile(
   join(output, "index.html"),
   renderShell({
     title: "目录",
-    heading: "AI 工程博客中英对照",
-    subline: `共 ${pages.length} 篇 · ${sources.size} 个来源`,
+    heading: "AI 使用与原理",
+    subline: `公开工程文章中英对照 · 共 ${pages.length} 篇 · ${sources.size} 个来源`,
     searchIndexHref: SEARCH_INDEX,
     prefix: "",
     activeHref: "index.html",
@@ -275,11 +278,11 @@ await writeFile(
     activeHref: "about.html",
     index,
     content: [
-      `<p>这里收的是 AI 实验室公开工程文章的中英对照，按段落对齐，现在有 ${pages.length} 篇，来自 ${sources.size} 个来源。每篇开头都留了原文链接和日期，配图直接引用原文地址。</p>`,
-      "<h2>读法</h2>",
-      "<p>中文在上、英文在下，点「隐藏英文原文」可以只留中文。顶部搜索用的是预先生成的索引，不依赖外部服务；右上角切深色，选择存在浏览器里。译文以英文原文为准，译错的地方开个 issue 说哪篇哪段就行。</p>",
+      `<p>收录 AI 实验室公开工程文章中关于怎么用 AI、以及 AI 系统原理的内容，按段落对齐中文译文与英文原文。现有 ${pages.length} 篇，来自 ${sources.size} 个来源；每篇保留原文链接、日期与配图地址。</p>`,
+      "<h2>阅读</h2>",
+      "<p>译文在上、原文在下，文章页可隐藏英文。搜索索引随站点一起发布，不依赖外部服务；深色模式保存在浏览器本地。</p>",
       "<h2>生成与版权</h2>",
-      `<p>页面由 <a href="${TOOL_REPO}">AIEngblogx/AIEngblogx</a> 的 <code>scripts/export-site.mjs</code> 导出。文章、译文和配图的权利归原作者，仓库里的 LICENSE 只管模板和脚本。</p>`,
+      `<p>页面由 <a href="${TOOL_REPO}">AIEngblogx/AIEngblogx</a> 的 <code>scripts/export-site.mjs</code> 导出。文章、译文与配图权利归原作者，以英文原文为准；<code>LICENSE</code> 仅覆盖页面模板、样式与脚本。勘误与下架请求通过 <a href="${SITE_REPO}/issues">站点仓库 Issue</a> 提交。</p>`,
     ].join("\n"),
     siteTitle: SITE,
     footer: FOOTER,
@@ -309,7 +312,7 @@ await writeFile(
     "  <channel>",
     `    <title>${xmlEscape(SITE)}</title>`,
     `    <link>${xmlEscape(siteUrl === "" ? "index.html" : siteUrl)}</link>`,
-    "    <description>公开 AI 工程博客中英对照</description>",
+    "    <description>AI 使用与原理相关工程文章的中英对照</description>",
     ...items,
     "  </channel>",
     "</rss>",
@@ -324,15 +327,13 @@ await writeFile(
   [
     `# ${SITE}`,
     "",
-    `AI 工程博客的中英对照阅读站，按段落对齐原文与译文。收录 ${[...sources].sort().map(sourceLabel).join("、")} 的公开文章，目前 ${pages.length} 篇。`,
+    `收录 AI 实验室公开工程文章中关于怎么用 AI、以及 AI 系统原理的内容，按段落对齐中文译文与英文原文。目前 ${pages.length} 篇，来自 ${[...sources].sort().map(sourceLabel).join("、")}。`,
     "",
-    `站点：${siteUrl === "" ? "https://aiengblogx.github.io/ai-engineering-related-blogs/" : siteUrl}（GitHub Pages，从 \`main\` 根目录发布）。侧边栏按来源分组、可折叠；文章页支持全文检索与隐藏英文原文。译文以英文原文为准。`,
-    "",
-    "仓库：" + `[${SITE_REPO}](${SITE_REPO})` + " · " + `[${TOOL_REPO}](${TOOL_REPO})`,
+    `站点：[GitHub Pages](${PUBLIC_SITE_URL}) · [站点仓库](${SITE_REPO}) · [工具仓库](${TOOL_REPO})`,
     "",
     "## 生成",
     "",
-    "页面由 [AIEngblogx/AIEngblogx](https://github.com/AIEngblogx/AIEngblogx) 导出，抓取、翻译与生成在本机完成，文章数据不入库。",
+    `页面由 [AIEngblogx/AIEngblogx](${TOOL_REPO}) 的 \`scripts/export-site.mjs\` 从本机抓取数据导出，文章数据不入库。`,
     "",
     "```bash",
     "npm ci",
@@ -340,14 +341,14 @@ await writeFile(
     "node dist/main.js crawl --json",
     "node dist/main.js translate --model <model> --lang zh-CN --json",
     "node scripts/translate-titles.mjs <model>",
-    "node scripts/export-site.mjs ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs",
+    `node scripts/export-site.mjs ../ai-engineering-related-blogs ${PUBLIC_SITE_URL}`,
     "```",
     "",
-    "第二个参数是站点 URL，写入 RSS 链接。导出只收录有译文且正文完整的文章，并清理上一版不再收录的页面。",
+    "第二个参数是站点 URL，用于生成 RSS 绝对链接。导出只收录译文完整且正文不少于 3 段的文章，并清理上一版不再收录的页面。",
     "",
     "## 版权",
     "",
-    "文章、译文与配图权利归原作者。仓库 `LICENSE` 覆盖模板、样式与脚本。勘误与下架请求通过仓库 Issue 提交。",
+    "文章、译文与配图权利归原作者，以英文原文为准。`LICENSE` 仅覆盖页面模板、样式与脚本。勘误与下架请求通过仓库 Issue 提交。",
     "",
   ].join("\n"),
   "utf8",

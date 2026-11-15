@@ -2,7 +2,7 @@
 
 <h1 id="aiengblogx">AIEngblogx</h1>
 
-<p>AI engineering blog articles, side by side with Chinese translations.</p>
+<p>Bilingual archive of engineering articles on using AI systems and how they work.</p>
 
 <p>
   <a href="https://aiengblogx.github.io/ai-engineering-related-blogs/">Site</a> ·
@@ -13,120 +13,93 @@
 
 <p>
   <a href="https://github.com/AIEngblogx/AIEngblogx/actions/workflows/ci.yml"><img src="https://github.com/AIEngblogx/AIEngblogx/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
-  <a href="package.json"><img src="https://img.shields.io/badge/node-24%2B-339933.svg" alt="Node 24+"></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT">
+  <img src="https://img.shields.io/badge/node-24%2B-339933.svg" alt="Node 24+">
 </p>
 
 </div>
 
-Crawl public engineering blogs, translate articles into any target language with
-a local OpenAI-compatible model, align sentences, review by hand, and publish a
-static side-by-side reader. Sources, target languages, and the model endpoint
-are configuration — no machine-specific settings or collected article data live
-in this repository.
+Articles about how to use AI systems and how they work, collected from public AI
+lab engineering blogs and published with paragraph-aligned Chinese translations.
+The reader is static HTML; the pages live in
+[ai-engineering-related-blogs](https://github.com/AIEngblogx/ai-engineering-related-blogs).
 
-This repository contains the tooling behind
-[AIEngblogx](https://github.com/AIEngblogx/ai-engineering-related-blogs), a
-static bilingual reading site. The generated pages are published from that
-separate repository.
-
-## Features
-
-- Discovery from listing pages, RSS/Atom feeds, and sitemaps, with
-  `robots.txt` checks and request throttling enabled by default.
-- Original text, links, and images (including alt text) are preserved.
-- Translation into any language tag (`zh-CN`, `ja-JP`, `fr-FR`, …) through an
-  OpenAI-compatible chat endpoint. Paragraphs are translated individually so
-  source and target stay one-to-one.
-- Sentence alignment, mandatory human review, and a self-contained HTML reader.
-- Runtime data stays on your machine; the repository contains code,
-  configuration, and tests only.
+This repository holds the crawler, translator, and site generator. Sources,
+target languages, and the model endpoint are configuration or runtime arguments;
+crawl data and translations stay on the machine that runs them.
 
 ## Requirements
 
-- Node.js 24+
-- An OpenAI-compatible chat endpoint (for example Ollama or llama.cpp)
+Node.js 24+ and an OpenAI-compatible chat endpoint (Ollama, llama.cpp, or similar).
 
-## Quick start
+## Build
 
 ```bash
 npm ci
 npm run check
 npm test
 npm run build
-node dist/main.js status --json
 ```
 
-## Configuration
+`npm run check` runs `tsc --noEmit` and Biome; tests use local HTTP fixtures
+only. CI runs the same checks on every push.
+
+## Pipeline
 
 `config.toml` defines sources, crawl limits, `target_languages`, and sampling
-parameters. Model names and endpoints are supplied at runtime:
+parameters. `config/glossary.json` holds terminology rules. Model names and
+endpoints are runtime arguments.
 
 ```bash
-export OLLAMA_BASE_URL=http://localhost:11434/v1
-export OLLAMA_MODEL=<your-model>
-node dist/main.js translate --lang zh-CN --json
+node dist/main.js crawl --json
+node dist/main.js translate --model <model> --lang zh-CN --json
+node dist/main.js align --json
+node dist/main.js review --status aligned
+node dist/main.js build-viewer --json
+node dist/main.js publish --json
+node dist/main.js serve --port 8080
 ```
-
-`--model` and `--endpoint` override the environment. `BLOG_TRANSLATOR`,
-`BLOG_REVIEWER`, and `BLOG_WEBHOOK_URL` are optional.
-`config/glossary.json` holds terminology rules injected into translation prompts.
-
-## Commands
 
 | Command | Purpose |
 |---|---|
 | `crawl` | Discover and store articles |
-| `translate` | Translate pending articles into the configured language(s) |
+| `translate` | Translate pending articles, one paragraph at a time |
 | `align` | Build sentence-level alignment |
 | `review` | Inspect and edit translations |
-| `build-viewer` | Generate the side-by-side reader |
-| `publish` | Render the static site and record published articles |
-| `serve` | Preview the generated site locally |
+| `build-viewer` | Render the two-pane reader |
+| `publish` | Write the static site into `site/` for local preview |
+| `serve` | Preview `site/` locally |
 | `status` | Show state counts |
 
-Every command accepts `--json`; exit code `0` means success, `1` partial
-failure, `2` fatal error. State moves through
-`pending → translated → aligned → reviewed → published`. Publishing requires a
-human-edited, reviewed article.
+Every command accepts `--json`; exit codes are `0` success, `1` partial failure,
+`2` fatal error. `publish` requires a reviewed article. Runtime variables are
+`OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_QUANT`, `BLOG_TRANSLATOR`,
+`BLOG_REVIEWER`, and `BLOG_WEBHOOK_URL`; `--model` and `--endpoint` override the
+first two. Output goes to `data/`, `inbox/`, `site/`, `logs/`, and `docs/`, all
+gitignored.
 
-## Site generation
+## Publishing the site
 
-`scripts/export-site.mjs` renders the published pages from local crawl data:
+The public site is generated by `scripts/export-site.mjs` from local crawl data
+and written to the site repository:
 
 ```bash
 npm run build
-node dist/main.js crawl --json
-node dist/main.js translate --model <model> --lang zh-CN --json
 node scripts/translate-titles.mjs <model>
-npm run export:site -- ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs
+npm run export:site -- ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs/
 ```
 
-The second argument sets the absolute links in RSS; omit it and feed items point
-to the original articles. Crawl data is not versioned, so a fresh clone needs
-its own `crawl` and `translate` runs. Only articles with a completed translation
-are exported. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full sequence.
-
-## Runtime data
-
-`data/`, `inbox/`, `site/`, `logs/`, and `docs/` are local and gitignored.
-`config/glossary.json` is the versioned terminology file. Build and publish
-write only to these local directories.
-
-## Development
-
-`npm run check` runs TypeScript and Biome, `npm test` uses local HTTP fixtures
-only, and `npm run build` emits `dist/`. CI runs the same checks on every push.
-Conventions and the site reproduction steps are in
-[CONTRIBUTING.md](CONTRIBUTING.md).
+The second argument is the public site URL used for absolute RSS links; omit it
+and feed items point at the original articles. Crawl data is not versioned, so a
+fresh clone needs its own `crawl` and `translate` runs. Only articles with a
+complete translation and at least three paragraphs of body text are exported.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full sequence.
 
 ## Legal
 
-Only public article text is collected, with attribution and links to the
-original. Article text, translations, and images remain the property of their
-authors; the published site states its own content notice and takedown process.
-Translations are provided as-is; consult the original for authoritative wording.
-Respect each site's `robots.txt` and terms of use.
+Articles link back to their sources and remain the property of their authors, as
+do translations and images. Translations are provided as-is; the English
+original is authoritative. Respect each site's `robots.txt` and terms of use.
 
 ## License
 
@@ -138,25 +111,16 @@ MIT, see [LICENSE](LICENSE).
 
 [English](#aiengblogx)
 
-本仓库抓取公开工程博客，用本地 OpenAI 兼容模型把文章翻译成任意目标语言，
-做句子对齐、人工校对，最后生成对照阅读的静态站点。来源、目标语言和模型端点都可配置，
-仓库里不包含任何特定机器的设置或抓取到的文章数据。
+收录 AI 实验室公开工程文章中关于怎么用 AI、以及 AI 系统原理的内容，按段落对齐中文译文与英文原文，生成静态对照阅读站。站点页面在[站点仓库](https://github.com/AIEngblogx/ai-engineering-related-blogs)发布，本仓库只放抓取、翻译和生成代码。
 
-本仓库是 [AIEngblogx](https://github.com/AIEngblogx/ai-engineering-related-blogs)
-双语阅读站的工具代码，生成的页面在另一个仓库发布。
+来源、目标语言与模型端点都是配置或运行时参数；抓取数据、译文与中间产物留在本机，`data/`、`inbox/`、`site/`、`logs/`、`docs/` 均不入库。
 
-- 支持列表页、RSS/Atom、sitemap 发现，默认校验 `robots.txt` 并限速。
-- 保留原文、原文链接与配图（含 alt）；按段落翻译，保证源文与译文一一对应。
-- 目标语言用语言标签指定，例如 `zh-CN`、`ja-JP`、`fr-FR`。
-- 人工校对是发布前不可跳过的关卡，阅读器是单文件 HTML，样式与数据全部内联。
-
-环境要求 Node.js 24+ 和一个 OpenAI 兼容的翻译端点。配置见 `config.toml`，
-模型名与端点通过 `--model` / `--endpoint` 或环境变量在运行时提供。
+环境要求 Node.js 24+ 和一个 OpenAI 兼容的翻译端点。
 
 ```bash
 npm ci && npm run check && npm test && npm run build
 node dist/main.js crawl --json
-node dist/main.js translate --lang zh-CN --json
+node dist/main.js translate --model <model> --lang zh-CN --json
 node dist/main.js align --json
 node dist/main.js review --status aligned
 node dist/main.js build-viewer --json
@@ -164,23 +128,14 @@ node dist/main.js publish --json
 node dist/main.js serve --port 8080
 ```
 
-## 生成站点
-
-`scripts/export-site.mjs` 从本机抓取数据生成站点页面：
+`publish` 要求文章已人工校对，产物写入 `site/` 供本地预览。对外站点不走这条路径，由 `scripts/export-site.mjs` 直接导出：
 
 ```bash
 npm run build
-node dist/main.js crawl --json
-node dist/main.js translate --model <model> --lang zh-CN --json
 node scripts/translate-titles.mjs <model>
-npm run export:site -- ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs
+npm run export:site -- ../ai-engineering-related-blogs https://aiengblogx.github.io/ai-engineering-related-blogs/
 ```
 
-第二个参数用于生成 RSS 的绝对链接；省略时订阅条目指向文章原文。抓取数据不入库，
-新 clone 需要自己跑 `crawl` 与 `translate`。只有已完成译文的文章会被导出，
-完整步骤见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+第二个参数是站点 URL，用于生成 RSS 绝对链接。导出只收录译文完整且正文不少于 3 段的文章，并清理上一版不再收录的页面。完整步骤见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-`data/`、`inbox/`、`site/`、`logs/`、`docs/` 都是本机产物，不入库；
-`config/glossary.json` 是随仓库维护的术语表。构建与发布只写这些目录，不改动仓库内容。
-
-改动约定见 [CONTRIBUTING.md](CONTRIBUTING.md)，许可为 MIT，见 [LICENSE](LICENSE)。
+文章、译文与配图的权利归原作者，以英文原文为准；`config/glossary.json` 维护术语表。许可为 MIT，见 [LICENSE](LICENSE)。

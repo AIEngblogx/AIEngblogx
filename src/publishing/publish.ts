@@ -85,7 +85,7 @@ function renderIndex(index: ArticleIndex): string {
     .filter((article) => article.status === "published")
     .sort((left, right) => right.published_at.localeCompare(left.published_at));
   const lines = [
-    "# Blog Translations",
+    "# AIEngblogx",
     "",
     "Side-by-side translations of public engineering articles.",
     "",
@@ -228,7 +228,7 @@ function renderAboutHtml(index: ArticleIndex): string {
     "<p>crawl → translate → align → review → build-viewer → publish</p>",
     "<p>Crawling and translation are repeatable; human review is mandatory before publishing.</p>",
     "<h2>Removal</h2>",
-    "<p>Run <code>blog-translate publish --remove &lt;id&gt;</code> to remove an article, its page, and its reader.</p>",
+    "<p>Run <code>aiengblogx publish --remove &lt;id&gt;</code> to remove an article, its page, and its reader.</p>",
   ];
   return renderShell({
     title: "About",
@@ -295,7 +295,7 @@ function renderRss(index: ArticleIndex, siteUrl: string | null): string {
     '<?xml version="1.0" encoding="utf-8"?>',
     '<rss version="2.0">',
     "  <channel>",
-    "    <title>Blog Translations</title>",
+    "    <title>AIEngblogx</title>",
     `    <link>${xmlEscape(channelLink)}</link>`,
     "    <description>Translated engineering articles</description>",
     ...items,
@@ -335,7 +335,7 @@ async function ensureAbout(root: string): Promise<void> {
     "",
     "## Removal",
     "",
-    "Run `blog-translate publish --remove <id>` to remove an article, its Markdown, and its reader.",
+    "Run `aiengblogx publish --remove <id>` to remove an article, its Markdown, and its reader.",
     "",
   ];
   await writeTextAtomic(path, lines.join("\n"));
