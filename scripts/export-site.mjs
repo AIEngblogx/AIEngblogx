@@ -37,7 +37,7 @@ const COHERE_NON_ARTICLES = [
   "partners with", "Cohere and ", "Cohere signs", "Cohere expands",
   "Cohere deepens", "Cohere adds", "Cohere achieves", "Connect 2025",
   "10 reasons businesses choose", "AI advantage: How financial institutions",
-  "AI customer experience", "advances sovereign",
+  "AI customer experience", "advances sovereign", "partner program",
 ];
 
 function shouldInclude(article) {
