@@ -26,7 +26,28 @@ const SOURCE_NAMES = {
   "anthropic-engineering": "Anthropic Engineering",
   "openai-engineering": "OpenAI Engineering",
   "google-deepmind": "Google DeepMind",
+  "cohere-blog": "Cohere Blog",
 };
+
+const COHERE_NON_ARTICLES = [
+  "office", "footprint", "EMEA hub", "APAC hub", "ouvre un bureau", "raises ",
+  "valuation", "second close", "funding", "files motion", "lawsuit", "HIPAA",
+  "ISO 42001", "certifications", "brand ambassador", "chess champion",
+  "early-career researchers", "open research community", "partnership",
+  "partners with", "Cohere and ", "Cohere signs", "Cohere expands",
+  "Cohere deepens", "Cohere adds", "Cohere achieves", "Connect 2025",
+  "10 reasons businesses choose", "AI advantage: How financial institutions",
+  "AI customer experience", "advances sovereign",
+];
+
+function shouldInclude(article) {
+  if (article.source !== "cohere-blog") return true;
+  const title = article.title.toLowerCase();
+  if (COHERE_NON_ARTICLES.some((needle) => title.includes(needle.toLowerCase()))) {
+    return false;
+  }
+  return !/[\uAC00-\uD7AF]/.test(article.title);
+}
 
 function sourceLabel(name) {
   return (
@@ -112,6 +133,7 @@ const sourceIndex = JSON.parse(await readFile(join(root, "data", "articles.json"
 const articles = [];
 const pendingById = new Map();
 for (const article of sourceIndex.articles) {
+  if (!shouldInclude(article)) continue;
   let pending;
   try {
     pending = JSON.parse(

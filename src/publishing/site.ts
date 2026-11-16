@@ -7,6 +7,7 @@ const SOURCE_NAMES: Record<string, string> = {
   "anthropic-engineering": "Anthropic Engineering",
   "openai-engineering": "OpenAI Engineering",
   "google-deepmind": "Google DeepMind",
+  "cohere-blog": "Cohere Blog",
 };
 
 function sourceLabel(name: string): string {

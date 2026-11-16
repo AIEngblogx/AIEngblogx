@@ -16,11 +16,23 @@ list_url = "https://deepmind.google/blog/feed/basic"
 name = "openai-engineering"
 list_url = "https://openai.com/news/engineering/rss.xml"
 
+[[sources]]
+name = "langchain-blog"
+list_url = "https://blog.langchain.com/"
+
+[[sources]]
+name = "llamaindex-blog"
+list_url = "https://www.llamaindex.ai/blog"
+
+[[sources]]
+name = "cohere-blog"
+list_url = "https://cohere.com/blog"
+
 [crawl]
 respect_robots = true
 fetch_full_text = true
 request_delay_ms = 1000
-max_articles_per_source = 20
+max_articles_per_source = 60
 
 [translate]
 target_languages = ["zh-CN"]
